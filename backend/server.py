@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
+import json
 import logging
 from pathlib import Path
 from pydantic import BaseModel, Field, ConfigDict
@@ -24,6 +25,18 @@ db = client[os.environ['DB_NAME']]
 
 # LLM API Key
 EMERGENT_LLM_KEY = os.environ.get('EMERGENT_LLM_KEY', '')
+
+# Load deployed contract addresses if available
+DEPLOYED_CONTRACTS = {}
+try:
+    deployment_file = ROOT_DIR / 'deployment_result.json'
+    if deployment_file.exists():
+        with open(deployment_file, 'r') as f:
+            deployment_data = json.load(f)
+            if deployment_data.get('status') != 'PENDING_FUNDING':
+                DEPLOYED_CONTRACTS = deployment_data.get('contracts', {})
+except Exception as e:
+    logging.warning(f"Could not load deployment result: {e}")
 
 # Create the main app
 app = FastAPI(title="OmniHealth Guardian API")
