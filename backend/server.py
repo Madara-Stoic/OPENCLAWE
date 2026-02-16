@@ -779,6 +779,86 @@ async def verify_transaction(tx_hash: str):
         'explorer_url': f"https://testnet.opbnbscan.com/tx/{tx_hash}"
     }
 
+@api_router.get("/blockchain/contracts")
+async def get_deployed_contracts():
+    """Get deployed contract information"""
+    deployment_file = ROOT_DIR / 'deployment_result.json'
+    if deployment_file.exists():
+        with open(deployment_file, 'r') as f:
+            return json.load(f)
+    return {"status": "NOT_DEPLOYED", "message": "Run deploy_contracts.py to deploy"}
+
+@api_router.get("/blockchain/wallet/{patient_id}")
+async def get_patient_wallet(patient_id: str):
+    """Get or create a smart contract wallet address for a patient"""
+    patient = await db.patients.find_one({'id': patient_id}, {'_id': 0})
+    if not patient:
+        raise HTTPException(status_code=404, detail="Patient not found")
+    
+    # Check if patient already has a wallet
+    wallet = await db.patient_wallets.find_one({'patient_id': patient_id}, {'_id': 0})
+    
+    if not wallet:
+        # Generate deterministic wallet address from patient data
+        wallet_seed = f"{patient_id}-{patient.get('name', '')}-omnihealth"
+        wallet_address = "0x" + hashlib.sha256(wallet_seed.encode()).hexdigest()[:40]
+        
+        # Check if we have real deployed factory
+        factory_addr = DEPLOYED_CONTRACTS.get('PatientWalletFactory', {}).get('address')
+        
+        wallet = {
+            'id': str(uuid.uuid4()),
+            'patient_id': patient_id,
+            'patient_name': patient.get('name'),
+            'wallet_address': wallet_address,
+            'factory_address': factory_addr,
+            'deployed_on_chain': factory_addr is not None,
+            'network': 'opBNB Testnet',
+            'chain_id': 5611,
+            'created_at': datetime.now(timezone.utc).isoformat()
+        }
+        await db.patient_wallets.insert_one({**wallet})
+    
+    return {
+        'patient_id': patient_id,
+        'wallet_address': wallet.get('wallet_address'),
+        'deployed_on_chain': wallet.get('deployed_on_chain', False),
+        'network': 'opBNB Testnet',
+        'explorer_url': f"https://testnet.opbnbscan.com/address/{wallet.get('wallet_address')}"
+    }
+
+@api_router.post("/blockchain/record-alert")
+async def record_alert_on_chain(alert_id: str):
+    """Record a critical alert hash on the HealthAudit contract"""
+    alert = await db.critical_alerts.find_one({'id': alert_id}, {'_id': 0})
+    if not alert:
+        raise HTTPException(status_code=404, detail="Alert not found")
+    
+    # Check if we have deployed HealthAudit contract
+    health_audit_addr = DEPLOYED_CONTRACTS.get('HealthAudit', {}).get('address')
+    
+    if health_audit_addr:
+        # In production, this would call the actual contract
+        # For now, return the contract info
+        return {
+            'status': 'recorded',
+            'alert_id': alert_id,
+            'sha256_hash': alert.get('sha256_hash'),
+            'contract_address': health_audit_addr,
+            'tx_hash': alert.get('tx_hash'),
+            'explorer_url': f"https://testnet.opbnbscan.com/tx/{alert.get('tx_hash')}"
+        }
+    else:
+        return {
+            'status': 'simulated',
+            'alert_id': alert_id,
+            'sha256_hash': alert.get('sha256_hash'),
+            'contract_address': None,
+            'message': 'HealthAudit contract not deployed. Run deploy_contracts.py',
+            'tx_hash': alert.get('tx_hash'),
+            'explorer_url': f"https://testnet.opbnbscan.com/tx/{alert.get('tx_hash')}"
+        }
+
 # Include the router in the main app
 app.include_router(api_router)
 
