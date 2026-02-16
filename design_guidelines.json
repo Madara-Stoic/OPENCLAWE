@@ -1,0 +1,164 @@
+{
+  "project_name": "OmniHealth Guardian",
+  "theme_strategy": {
+    "mode": "dark",
+    "rationale": "Medical environments require high contrast for readability in low-light monitoring rooms. The 'dark mode' also aligns with the Web3/Blockchain aesthetic (opBNB) and reduces eye strain for long-duration monitoring.",
+    "base_classes": "dark bg-background text-foreground antialiased"
+  },
+  "typography": {
+    "font_family": {
+      "headings": "Chivo, sans-serif",
+      "body": "Inter, sans-serif",
+      "mono": "JetBrains Mono, monospace"
+    },
+    "scale": {
+      "h1": "text-4xl md:text-5xl font-black tracking-tight",
+      "h2": "text-3xl md:text-4xl font-bold tracking-tight",
+      "h3": "text-2xl font-bold tracking-tight",
+      "h4": "text-xl font-semibold tracking-wide",
+      "body": "text-base leading-relaxed text-muted-foreground",
+      "small": "text-sm font-medium uppercase tracking-wider text-muted-foreground",
+      "data": "font-mono text-lg tracking-tight"
+    },
+    "imports": [
+      "https://fonts.googleapis.com/css2?family=Chivo:wght@300;400;700;900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    ]
+  },
+  "colors": {
+    "palette": {
+      "background": "#09090b",
+      "foreground": "#fafafa",
+      "card": "#121215",
+      "card_foreground": "#fafafa",
+      "popover": "#121215",
+      "popover_foreground": "#fafafa",
+      "primary": "#fafafa",
+      "primary_foreground": "#18181b",
+      "secondary": "#27272a",
+      "secondary_foreground": "#fafafa",
+      "muted": "#27272a",
+      "muted_foreground": "#a1a1aa",
+      "accent": "#27272a",
+      "accent_foreground": "#fafafa",
+      "destructive": "#991b1b",
+      "destructive_foreground": "#fafafa",
+      "border": "#27272a",
+      "input": "#27272a",
+      "ring": "#fafafa"
+    },
+    "functional": {
+      "success": "#10b981",
+      "warning": "#f59e0b",
+      "error": "#f43f5e",
+      "info": "#0ea5e9",
+      "blockchain": "#8b5cf6",
+      "chart_1": "#0ea5e9",
+      "chart_2": "#8b5cf6",
+      "chart_3": "#10b981",
+      "chart_4": "#f59e0b",
+      "chart_5": "#f43f5e"
+    }
+  },
+  "visual_enhancers": {
+    "surface_strategy": "grid_borders",
+    "description": "Use 1px borders with low opacity to define areas. Avoid heavy card backgrounds. Create a 'technical' look.",
+    "classes": {
+      "container": "border border-border/40 bg-background/50 backdrop-blur-sm",
+      "grid_item": "border-r border-b border-border/40 p-6",
+      "active_item": "bg-primary/5 border-primary/20 relative overflow-hidden"
+    },
+    "effects": {
+      "glow": "shadow-[0_0_20px_rgba(139,92,246,0.15)]",
+      "glass": "bg-black/40 backdrop-blur-xl border border-white/10",
+      "scanline": "bg-[linear-gradient(to_bottom,transparent_50%,rgba(0,0,0,0.3)_50%)] bg-[length:100%_4px]"
+    }
+  },
+  "layout_strategy": {
+    "type": "bento_grid",
+    "dashboard_grid": "grid grid-cols-1 md:grid-cols-4 gap-4 p-4 md:p-6",
+    "spacing": {
+      "container_padding": "p-6 md:p-8",
+      "section_gap": "gap-8",
+      "element_gap": "gap-3"
+    },
+    "rules": [
+      "Mobile-first: Start with grid-cols-1.",
+      "Density: Use col-span-2 or col-span-3 for main charts.",
+      "Stretch: Use h-full on all grid children to align bottoms.",
+      "Negative Space: Don't fill every pixel; leave some cells empty or use them for decorative data viz."
+    ]
+  },
+  "components": {
+    "buttons": {
+      "primary": "bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-6 py-2 rounded-md font-medium transition-transform active:scale-95",
+      "secondary": "bg-secondary text-secondary-foreground hover:bg-secondary/80 h-10 px-6 py-2 rounded-md font-medium",
+      "ghost": "hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 rounded-md font-medium",
+      "destructive": "bg-destructive text-destructive-foreground hover:bg-destructive/90 h-10 px-6 py-2 rounded-md font-medium"
+    },
+    "cards": {
+      "base": "rounded-xl border border-border bg-card text-card-foreground shadow-sm",
+      "header": "flex flex-col space-y-1.5 p-6",
+      "content": "p-6 pt-0",
+      "footer": "flex items-center p-6 pt-0"
+    },
+    "badges": {
+      "default": "inline-flex items-center rounded-full border border-border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+      "verified": "border-transparent bg-purple-500/15 text-purple-400 hover:bg-purple-500/25 border-purple-500/20",
+      "alert": "border-transparent bg-red-500/15 text-red-400 hover:bg-red-500/25 border-red-500/20",
+      "healthy": "border-transparent bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/25 border-emerald-500/20"
+    }
+  },
+  "image_urls": {
+    "avatars": [
+      {
+        "url": "https://images.unsplash.com/photo-1624670319970-37aa780d4874?auto=format&fit=crop&w=200&h=200",
+        "category": "doctor",
+        "description": "Professional doctor portrait, dark background"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1597750974743-1445a125b827?auto=format&fit=crop&w=200&h=200",
+        "category": "patient",
+        "description": "Patient portrait, neutral background"
+      }
+    ],
+    "backgrounds": [
+      {
+        "url": "https://images.unsplash.com/photo-1747224317356-6dd1a4a078fd?auto=format&fit=crop&w=1920&q=80",
+        "category": "hero_bg",
+        "description": "Futuristic interface abstract background"
+      },
+       {
+        "url": "https://images.unsplash.com/photo-1529431801612-df968fb9eb9c?auto=format&fit=crop&w=1920&q=80",
+        "category": "hospital",
+        "description": "Modern hospital building at night"
+      }
+    ]
+  },
+  "motion_guidelines": {
+    "transitions": "transition-all duration-200 ease-in-out",
+    "hover_effects": "hover:border-primary/50 hover:shadow-[0_0_15px_rgba(255,255,255,0.1)]",
+    "animation_classes": {
+      "fade_in": "animate-in fade-in zoom-in-95 duration-300",
+      "slide_up": "animate-in slide-in-from-bottom-4 duration-500",
+      "pulse_slow": "animate-pulse duration-[3000ms]"
+    }
+  },
+  "accessibility": {
+    "contrast_check": "Ensure all text on dark backgrounds uses text-white or text-gray-200. Avoid dark gray text on dark backgrounds.",
+    "focus_states": "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+    "aria_labels": "All charts must have aria-label describing the data trend."
+  },
+  "universal_guidelines": [
+    "Dark colors look good when used independently without gradients. DO NOT use dark colors as gradients.",
+    "Don't make generic centered layouts. Use grids and asymmetry.",
+    "Every interaction needs micro-animations - hover states, transitions.",
+    "Use 2-3x more spacing than feels comfortable. Cramped designs look cheap.",
+    "Subtle grain textures and noise overlays separate good from extraordinary.",
+    "NEVER use AI assistant Emoji characters for icons.",
+    "Use 'sonner' for toasts.",
+    "Components MUST use named exports.",
+    "All interactive elements MUST include data-testid attribute.",
+    "For charts, use Recharts with the customized color palette defined in 'functional' colors."
+  ],
+  "instructions_to_main_agent": "You are building the frontend. Use the color palette and typography defined here. The theme is 'Medical Cyberpunk' - clean, dark, precise, with neon accents for data. Use the 'bento_grid' layout for the dashboard. Use 'grid_borders' surface strategy for containers. Implement the 'verified' badge style for all AI/Blockchain elements."
+}
