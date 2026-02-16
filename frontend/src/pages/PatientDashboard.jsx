@@ -436,6 +436,14 @@ export const PatientDashboard = () => {
             </ScrollArea>
           </CardContent>
         </Card>
+
+        {/* OpenClaw Skills Panel */}
+        {patientId && (
+          <OpenClawSkillsPanel 
+            patientId={patientId} 
+            patientName={patient?.name || 'Patient'} 
+          />
+        )}
       </div>
     </DashboardLayout>
   );
