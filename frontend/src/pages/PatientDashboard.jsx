@@ -13,6 +13,7 @@ import {
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import * as api from '@/services/api';
 import { toast } from 'sonner';
+import { OpenClawSkillsPanel } from '@/components/OpenClawSkillsPanel';
 
 export const PatientDashboard = () => {
   const { user } = useAuth();
