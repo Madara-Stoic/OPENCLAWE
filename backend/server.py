@@ -429,7 +429,8 @@ async def record_reading(patient_id: str = None):
         raise HTTPException(status_code=404, detail="No patients found")
     
     reading = generate_device_reading(patient)
-    await db.device_readings.insert_one(reading)
+    reading_to_store = {**reading}  # Create a copy to avoid _id mutation
+    await db.device_readings.insert_one(reading_to_store)
     
     # Check for critical conditions
     if reading['is_critical']:
