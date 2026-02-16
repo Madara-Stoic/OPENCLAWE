@@ -1,0 +1,34 @@
+{
+  "status": "PENDING_FUNDING",
+  "network": "opBNB Testnet",
+  "chain_id": 5611,
+  "explorer": "https://testnet.opbnbscan.com",
+  "deployer": {
+    "address": "0xBbbd90a05650cE647889258251A861e479ca2e4f",
+    "private_key": "e6e3df99443d25570c88b91f8f3a26e2221f5b35b8c1b95d7cf526803e7538a4"
+  },
+  "faucet_instructions": {
+    "step1": "Go to https://www.l2faucet.com/opbnb",
+    "step2": "Connect wallet or paste address: 0xBbbd90a05650cE647889258251A861e479ca2e4f",
+    "step3": "Request test BNB",
+    "step4": "Run: cd /app/backend && export DEPLOYER_PRIVATE_KEY=e6e3df99443d25570c88b91f8f3a26e2221f5b35b8c1b95d7cf526803e7538a4 && python deploy_contracts.py"
+  },
+  "contracts": {
+    "HealthAudit": {
+      "status": "NOT_DEPLOYED",
+      "description": "Stores SHA-256 hashes of critical medical alerts on opBNB",
+      "functions": ["recordAlert", "getAlert", "verifyAlertHash", "getPatientAlerts"]
+    },
+    "SimplePaymaster": {
+      "status": "NOT_DEPLOYED", 
+      "description": "Sponsors gas fees for critical alert transactions",
+      "functions": ["deposit", "sponsorGas", "whitelistCaller", "withdraw"]
+    },
+    "PatientWalletFactory": {
+      "status": "NOT_DEPLOYED",
+      "description": "Factory for deploying patient smart contract wallets",
+      "functions": ["createWallet", "getWallet", "getWalletCount"]
+    }
+  },
+  "note": "Fund the deployer wallet with test BNB from opBNB faucet, then run deploy_contracts.py to get real contract addresses and transaction hashes"
+}
