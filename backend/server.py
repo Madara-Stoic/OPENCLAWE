@@ -863,6 +863,199 @@ async def record_alert_on_chain(alert_id: str):
             'explorer_url': f"https://testnet.opbnbscan.com/tx/{alert.get('tx_hash')}"
         }
 
+# ============== OPENCLAW SKILL ENDPOINTS ==============
+
+@api_router.get("/openclaw/skills")
+async def get_openclaw_skills():
+    """Get all available OpenClaw skills"""
+    global openclaw_agent
+    if openclaw_agent is None:
+        openclaw_agent = OpenClawGuardianAgent(db, EMERGENT_LLM_KEY)
+    return {
+        "agent": "OpenClaw Guardian",
+        "version": "1.0.0",
+        "skills": openclaw_agent.get_skill_configs()
+    }
+
+@api_router.post("/openclaw/skill/critical-monitor/{patient_id}")
+async def run_critical_monitor(patient_id: str):
+    """
+    OpenClaw Skill: Critical Condition Monitor
+    Monitors patient vitals and triggers alerts for critical conditions
+    """
+    global openclaw_agent
+    if openclaw_agent is None:
+        openclaw_agent = OpenClawGuardianAgent(db, EMERGENT_LLM_KEY)
+    
+    patient = await db.patients.find_one({'id': patient_id}, {'_id': 0})
+    if not patient:
+        raise HTTPException(status_code=404, detail="Patient not found")
+    
+    # Generate current vitals
+    condition = patient.get('condition', '')
+    is_diabetes = 'diabetes' in condition
+    
+    # Simulate device reading with occasional critical values
+    critical_chance = random.random()
+    
+    if is_diabetes:
+        if critical_chance < 0.3:  # 30% chance of critical for demo
+            glucose = random.choice([random.randint(40, 65), random.randint(260, 350)])
+        else:
+            glucose = random.randint(80, 160)
+        heart_rate = None
+    else:
+        glucose = None
+        if critical_chance < 0.3:
+            heart_rate = random.choice([random.randint(35, 48), random.randint(125, 160)])
+        else:
+            heart_rate = random.randint(65, 95)
+    
+    battery = random.randint(8, 100) if critical_chance < 0.2 else random.randint(30, 100)
+    
+    vitals = PatientVitals(
+        patient_id=patient_id,
+        patient_name=patient.get('name'),
+        glucose_level=glucose,
+        heart_rate=heart_rate,
+        battery_level=battery,
+        condition=condition
+    )
+    
+    # Run the skill
+    alert = await openclaw_agent.monitor_critical_conditions(vitals)
+    
+    if alert:
+        from dataclasses import asdict
+        alert_dict = asdict(alert)
+        alert_dict['severity'] = alert.severity.value
+        return {
+            "skill": "critical_condition_monitor",
+            "status": "alert_generated",
+            "alert": alert_dict,
+            "vitals": {
+                "glucose_level": glucose,
+                "heart_rate": heart_rate,
+                "battery_level": battery
+            },
+            "verified_by_openclaw": True,
+            "explorer_url": f"https://testnet.opbnbscan.com/tx/{alert.tx_hash}"
+        }
+    else:
+        return {
+            "skill": "critical_condition_monitor",
+            "status": "normal",
+            "message": "All vitals within normal range",
+            "vitals": {
+                "glucose_level": glucose,
+                "heart_rate": heart_rate,
+                "battery_level": battery
+            },
+            "verified_by_openclaw": True
+        }
+
+@api_router.post("/openclaw/skill/diet-suggestion/{patient_id}")
+async def run_diet_suggestion(patient_id: str, meal_type: str = "daily"):
+    """
+    OpenClaw Skill: AI Diet Suggestion
+    Generates personalized diet plans based on patient condition
+    """
+    global openclaw_agent
+    if openclaw_agent is None:
+        openclaw_agent = OpenClawGuardianAgent(db, EMERGENT_LLM_KEY)
+    
+    result = await openclaw_agent.generate_diet_suggestion(patient_id, meal_type)
+    
+    if "error" in result:
+        raise HTTPException(status_code=404, detail=result["error"])
+    
+    return {
+        "skill": "ai_diet_suggestion",
+        "status": "generated",
+        **result
+    }
+
+@api_router.post("/openclaw/skill/realtime-feedback/{patient_id}")
+async def run_realtime_feedback(patient_id: str):
+    """
+    OpenClaw Skill: Real-time Feedback
+    Provides immediate coaching based on current vitals and trends
+    """
+    global openclaw_agent
+    if openclaw_agent is None:
+        openclaw_agent = OpenClawGuardianAgent(db, EMERGENT_LLM_KEY)
+    
+    patient = await db.patients.find_one({'id': patient_id}, {'_id': 0})
+    if not patient:
+        raise HTTPException(status_code=404, detail="Patient not found")
+    
+    condition = patient.get('condition', '')
+    is_diabetes = 'diabetes' in condition
+    
+    vitals = PatientVitals(
+        patient_id=patient_id,
+        patient_name=patient.get('name'),
+        glucose_level=random.randint(70, 180) if is_diabetes else None,
+        heart_rate=random.randint(60, 100) if not is_diabetes else None,
+        battery_level=random.randint(20, 100),
+        condition=condition
+    )
+    
+    result = await openclaw_agent.generate_realtime_feedback(patient_id, vitals)
+    
+    if "error" in result:
+        raise HTTPException(status_code=404, detail=result["error"])
+    
+    return {
+        "skill": "realtime_feedback",
+        "status": "generated",
+        **result
+    }
+
+@api_router.post("/openclaw/skill/daily-progress/{patient_id}")
+async def run_daily_progress(patient_id: str, date: str = None):
+    """
+    OpenClaw Skill: Daily Progress Tracker
+    Generates comprehensive daily health report
+    """
+    global openclaw_agent
+    if openclaw_agent is None:
+        openclaw_agent = OpenClawGuardianAgent(db, EMERGENT_LLM_KEY)
+    
+    result = await openclaw_agent.generate_daily_progress(patient_id, date)
+    
+    if "error" in result:
+        raise HTTPException(status_code=404, detail=result["error"])
+    
+    return {
+        "skill": "daily_progress_tracker",
+        "status": "generated",
+        **result
+    }
+
+@api_router.post("/openclaw/run-all/{patient_id}")
+async def run_all_skills(patient_id: str):
+    """
+    Run all OpenClaw skills for a patient
+    Useful for testing and demonstration
+    """
+    global openclaw_agent
+    if openclaw_agent is None:
+        openclaw_agent = OpenClawGuardianAgent(db, EMERGENT_LLM_KEY)
+    
+    result = await openclaw_agent.run_all_skills_once(patient_id)
+    
+    if "error" in result:
+        raise HTTPException(status_code=404, detail=result["error"])
+    
+    return {
+        "agent": "OpenClaw Guardian",
+        "patient": result.get("patient"),
+        "skills_executed": result.get("skills_executed"),
+        "verified_by_openclaw": True,
+        "timestamp": datetime.now(timezone.utc).isoformat()
+    }
+
 # Include the router in the main app
 app.include_router(api_router)
 
