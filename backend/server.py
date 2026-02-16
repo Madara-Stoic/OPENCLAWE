@@ -14,6 +14,7 @@ import random
 import asyncio
 from datetime import datetime, timezone
 from emergentintegrations.llm.chat import LlmChat, UserMessage
+from openclaw_agent import OpenClawGuardianAgent, PatientVitals
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -25,6 +26,9 @@ db = client[os.environ['DB_NAME']]
 
 # LLM API Key
 EMERGENT_LLM_KEY = os.environ.get('EMERGENT_LLM_KEY', '')
+
+# Initialize OpenClaw Guardian Agent
+openclaw_agent = None
 
 # Load deployed contract addresses if available
 DEPLOYED_CONTRACTS = {}
