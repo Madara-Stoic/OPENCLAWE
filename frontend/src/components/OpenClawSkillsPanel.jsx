@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -6,50 +6,89 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Activity, Heart, Utensils, TrendingUp, Calendar, 
-  Play, Check, ExternalLink, AlertTriangle, Sparkles, Clock
+  Play, Check, ExternalLink, AlertTriangle, Sparkles, Clock,
+  Shield, Database, Cpu
 } from 'lucide-react';
-import * as api from '@/services/api';
 import { toast } from 'sonner';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+
+// OpenClaw Badge Component
+const OpenClawBadge = ({ className = '' }) => (
+  <div className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-full bg-gradient-to-r from-purple-600/20 to-cyan-600/20 border border-purple-500/30 ${className}`}>
+    <Shield className="w-3 h-3 text-purple-400" />
+    <span className="text-xs font-medium bg-gradient-to-r from-purple-400 to-cyan-400 text-transparent bg-clip-text">
+      Verified by OpenClaw
+    </span>
+    <Check className="w-3 h-3 text-cyan-400" />
+  </div>
+);
+
+// Moltbot Gateway Status Badge
+const MoltbotBadge = ({ status = 'active' }) => (
+  <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/30">
+    <Cpu className="w-3 h-3 text-emerald-400" />
+    <span className="text-xs text-emerald-400">Moltbot Gateway</span>
+    <span className={`w-1.5 h-1.5 rounded-full ${status === 'active' ? 'bg-emerald-400 animate-pulse' : 'bg-gray-400'}`} />
+  </div>
+);
 
 export const OpenClawSkillsPanel = ({ patientId, patientName }) => {
   const [isRunning, setIsRunning] = useState({});
   const [results, setResults] = useState({});
   const [activeTab, setActiveTab] = useState('overview');
+  const [gatewayInfo, setGatewayInfo] = useState(null);
+
+  // Fetch gateway info on mount
+  useEffect(() => {
+    const fetchGatewayInfo = async () => {
+      try {
+        const response = await fetch(`${BACKEND_URL}/api/moltbot/gateway`);
+        const data = await response.json();
+        setGatewayInfo(data);
+      } catch (error) {
+        console.error('Failed to fetch gateway info:', error);
+      }
+    };
+    fetchGatewayInfo();
+  }, []);
 
   const skills = [
     {
-      id: 'critical-monitor',
+      id: 'critical_condition_monitor',
       name: 'Critical Condition Monitor',
       description: 'Monitors vitals for critical conditions, triggers blockchain verification',
       icon: AlertTriangle,
       color: 'text-rose-400',
-      endpoint: `/api/openclaw/skill/critical-monitor/${patientId}`
+      emoji: '🚨',
+      endpoint: `/api/moltbot/skill/critical-monitor/${patientId}`
     },
     {
-      id: 'diet-suggestion',
+      id: 'ai_diet_suggestion',
       name: 'AI Diet Suggestion',
       description: 'Generates personalized diet plans based on condition',
       icon: Utensils,
       color: 'text-green-400',
-      endpoint: `/api/openclaw/skill/diet-suggestion/${patientId}`
+      emoji: '🥗',
+      endpoint: `/api/moltbot/skill/diet-suggestion/${patientId}`
     },
     {
-      id: 'realtime-feedback',
+      id: 'realtime_feedback',
       name: 'Real-time Feedback',
       description: 'Provides immediate coaching based on current vitals',
       icon: TrendingUp,
       color: 'text-cyan-400',
-      endpoint: `/api/openclaw/skill/realtime-feedback/${patientId}`
+      emoji: '💬',
+      endpoint: `/api/moltbot/skill/realtime-feedback/${patientId}`
     },
     {
-      id: 'daily-progress',
+      id: 'daily_progress_tracker',
       name: 'Daily Progress Tracker',
       description: 'Generates comprehensive daily health reports',
       icon: Calendar,
       color: 'text-purple-400',
-      endpoint: `/api/openclaw/skill/daily-progress/${patientId}`
+      emoji: '📊',
+      endpoint: `/api/moltbot/skill/daily-progress/${patientId}`
     }
   ];
 
@@ -65,13 +104,14 @@ export const OpenClawSkillsPanel = ({ patientId, patientName }) => {
       
       setResults(prev => ({ ...prev, [skill.id]: data }));
       
-      if (data.status === 'alert_generated') {
+      // Check if it's a Moltbot Gateway response
+      if (data.result?.status === 'alert_generated') {
         toast.error('Critical Alert Detected!', {
-          description: data.alert?.message || 'Immediate attention required'
+          description: data.result.alert?.message || 'Immediate attention required'
         });
       } else {
-        toast.success(`${skill.name} Complete`, {
-          description: 'Verified by OpenClaw'
+        toast.success(`${skill.emoji} ${skill.name} Complete`, {
+          description: 'Verified by OpenClaw • Moltbot Gateway'
         });
       }
     } catch (error) {
@@ -86,7 +126,7 @@ export const OpenClawSkillsPanel = ({ patientId, patientName }) => {
     setIsRunning(prev => ({ ...prev, all: true }));
     
     try {
-      const response = await fetch(`${BACKEND_URL}/api/openclaw/run-all/${patientId}`, {
+      const response = await fetch(`${BACKEND_URL}/api/moltbot/run-all/${patientId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
       });
@@ -94,8 +134,8 @@ export const OpenClawSkillsPanel = ({ patientId, patientName }) => {
       
       setResults(prev => ({ ...prev, all: data }));
       
-      toast.success('All OpenClaw Skills Executed', {
-        description: `${data.skills_executed?.length || 0} skills completed`
+      toast.success('All Moltbot Skills Executed', {
+        description: `${data.skills_executed?.length || 0} skills completed via OpenClaw Gateway`
       });
     } catch (error) {
       console.error('Failed to run all skills:', error);
@@ -106,22 +146,21 @@ export const OpenClawSkillsPanel = ({ patientId, patientName }) => {
   };
 
   const renderSkillResult = (skillId) => {
-    const result = results[skillId];
-    if (!result) return null;
+    const data = results[skillId];
+    if (!data) return null;
+    
+    // Moltbot Gateway returns results wrapped in `result`
+    const result = data.result || data;
 
     switch (skillId) {
-      case 'critical-monitor':
+      case 'critical_condition_monitor':
         return (
           <div className="space-y-2">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <Badge className={result.status === 'alert_generated' ? 'badge-critical' : 'badge-healthy'}>
                 {result.status === 'alert_generated' ? 'ALERT' : 'NORMAL'}
               </Badge>
-              {result.verified_by_openclaw && (
-                <Badge className="badge-verified gap-1">
-                  <Check className="w-3 h-3" /> Verified
-                </Badge>
-              )}
+              {data.verified_by_openclaw && <OpenClawBadge />}
             </div>
             {result.vitals && (
               <div className="grid grid-cols-3 gap-2 text-sm">
@@ -146,9 +185,9 @@ export const OpenClawSkillsPanel = ({ patientId, patientName }) => {
             {result.alert && (
               <div className="p-2 rounded bg-red-500/10 border border-red-500/30 text-sm">
                 <p className="text-red-400">{result.alert.message}</p>
-                {result.explorer_url && (
+                {result.blockchain?.explorer_url && (
                   <a 
-                    href={result.explorer_url} 
+                    href={result.blockchain.explorer_url} 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="text-xs text-cyan-400 hover:underline flex items-center gap-1 mt-1"
@@ -158,17 +197,21 @@ export const OpenClawSkillsPanel = ({ patientId, patientName }) => {
                 )}
               </div>
             )}
+            {data.tx_hash && (
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <Database className="w-3 h-3" />
+                <span className="font-mono truncate">{data.tx_hash.slice(0, 20)}...</span>
+              </div>
+            )}
           </div>
         );
 
-      case 'diet-suggestion':
+      case 'ai_diet_suggestion':
         return (
           <div className="space-y-2">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <Badge className="badge-healthy">Generated</Badge>
-              <Badge className="badge-verified gap-1">
-                <Check className="w-3 h-3" /> Verified by OpenClaw
-              </Badge>
+              {data.verified_by_openclaw && <OpenClawBadge />}
             </div>
             {result.diet_plan && (
               <div className="space-y-2 text-sm">
@@ -186,9 +229,9 @@ export const OpenClawSkillsPanel = ({ patientId, patientName }) => {
                 })}
               </div>
             )}
-            {result.explorer_url && (
+            {result.verification?.explorer_url && (
               <a 
-                href={result.explorer_url} 
+                href={result.verification.explorer_url} 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="text-xs text-cyan-400 hover:underline flex items-center gap-1"
@@ -196,12 +239,23 @@ export const OpenClawSkillsPanel = ({ patientId, patientName }) => {
                 View verification on opBNB <ExternalLink className="w-3 h-3" />
               </a>
             )}
+            {result.greenfield_cid && (
+              <div className="flex items-center gap-2 text-xs text-emerald-400">
+                <Database className="w-3 h-3" />
+                <span>Stored on BNB Greenfield</span>
+              </div>
+            )}
           </div>
         );
 
-      case 'realtime-feedback':
+      case 'realtime_feedback':
         return (
           <div className="space-y-2">
+            {data.verified_by_openclaw && (
+              <div className="mb-2">
+                <OpenClawBadge />
+              </div>
+            )}
             {result.feedback && (
               <div className="space-y-1">
                 {result.feedback.map((fb, i) => (
@@ -222,30 +276,41 @@ export const OpenClawSkillsPanel = ({ patientId, patientName }) => {
           </div>
         );
 
-      case 'daily-progress':
+      case 'daily_progress_tracker':
         return (
           <div className="space-y-2">
+            {data.verified_by_openclaw && (
+              <div className="mb-2">
+                <OpenClawBadge />
+              </div>
+            )}
             <div className="flex items-center gap-4">
               <div className="text-center">
                 <div className="text-2xl font-mono font-bold text-foreground">
-                  {result.overall_health_score?.toFixed(1)}
+                  {result.health_score?.toFixed(1) || result.overall_health_score?.toFixed(1) || 'N/A'}
                 </div>
                 <div className="text-xs text-muted-foreground">Health Score</div>
               </div>
               <div className="flex-1 grid grid-cols-2 gap-2 text-xs">
                 <div className="p-2 rounded bg-secondary/50">
                   <div className="text-muted-foreground">Readings</div>
-                  <div className="font-mono">{result.total_readings}</div>
+                  <div className="font-mono">{result.metrics?.total_readings || result.total_readings || 0}</div>
                 </div>
                 <div className="p-2 rounded bg-secondary/50">
                   <div className="text-muted-foreground">Alerts</div>
-                  <div className="font-mono">{result.critical_events}</div>
+                  <div className="font-mono">{result.metrics?.critical_events || result.critical_events || 0}</div>
                 </div>
               </div>
             </div>
             {result.recommendations && result.recommendations.length > 0 && (
               <div className="p-2 rounded bg-purple-500/10 border border-purple-500/30 text-sm">
                 {result.recommendations[0]}
+              </div>
+            )}
+            {result.greenfield_cid && (
+              <div className="flex items-center gap-2 text-xs text-emerald-400">
+                <Database className="w-3 h-3" />
+                <span>Stored on BNB Greenfield</span>
               </div>
             )}
           </div>
@@ -259,13 +324,31 @@ export const OpenClawSkillsPanel = ({ patientId, patientName }) => {
   return (
     <Card className="card-hover" data-testid="openclaw-skills-panel">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Sparkles className="w-5 h-5 text-purple-400" />
-          OpenClaw Skills
-        </CardTitle>
-        <CardDescription>
-          Autonomous AI agent for {patientName}
-        </CardDescription>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle className="flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-purple-400" />
+              Moltbot Skills
+            </CardTitle>
+            <CardDescription>
+              OpenClaw-powered AI agent for {patientName}
+            </CardDescription>
+          </div>
+          <MoltbotBadge status={gatewayInfo?.status || 'active'} />
+        </div>
+        {gatewayInfo && (
+          <div className="flex items-center gap-2 mt-2">
+            <Badge variant="outline" className="text-xs">
+              v{gatewayInfo.version}
+            </Badge>
+            <Badge variant="outline" className="text-xs">
+              {gatewayInfo.skills_loaded} skills loaded
+            </Badge>
+            <Badge variant="outline" className="text-xs text-emerald-400 border-emerald-500/30">
+              {gatewayInfo.storage}
+            </Badge>
+          </div>
+        )}
       </CardHeader>
       <CardContent>
         <Tabs value={activeTab} onValueChange={setActiveTab}>
@@ -277,12 +360,12 @@ export const OpenClawSkillsPanel = ({ patientId, patientName }) => {
           <TabsContent value="overview" className="space-y-3">
             <Button 
               onClick={runAllSkills}
-              className="w-full gap-2 bg-purple-600 hover:bg-purple-700"
+              className="w-full gap-2 bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-700 hover:to-cyan-700"
               disabled={isRunning.all}
               data-testid="run-all-skills-btn"
             >
               <Play className="w-4 h-4" />
-              {isRunning.all ? 'Running All Skills...' : 'Run All Skills'}
+              {isRunning.all ? 'Running All Skills...' : 'Run All Moltbot Skills'}
             </Button>
 
             <div className="space-y-2">
@@ -293,7 +376,7 @@ export const OpenClawSkillsPanel = ({ patientId, patientName }) => {
                   data-testid={`skill-${skill.id}`}
                 >
                   <div className="flex items-center gap-3">
-                    <skill.icon className={`w-5 h-5 ${skill.color}`} />
+                    <div className="text-xl">{skill.emoji}</div>
                     <div>
                       <div className="font-medium text-sm text-foreground">{skill.name}</div>
                       <div className="text-xs text-muted-foreground">{skill.description}</div>
@@ -320,11 +403,9 @@ export const OpenClawSkillsPanel = ({ patientId, patientName }) => {
           <TabsContent value="results">
             <ScrollArea className="h-[300px]">
               {results.all && (
-                <div className="mb-4 p-3 rounded-lg border border-purple-500/30 bg-purple-500/5">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Badge className="badge-verified gap-1">
-                      <Check className="w-3 h-3" /> All Skills Complete
-                    </Badge>
+                <div className="mb-4 p-3 rounded-lg border border-purple-500/30 bg-gradient-to-r from-purple-500/5 to-cyan-500/5">
+                  <div className="flex items-center gap-2 mb-2 flex-wrap">
+                    <OpenClawBadge />
                     <span className="text-xs text-muted-foreground">
                       {results.all.skills_executed?.length} skills executed
                     </span>
@@ -344,8 +425,13 @@ export const OpenClawSkillsPanel = ({ patientId, patientName }) => {
                       className="p-3 rounded-lg border border-border/40 bg-card/50"
                     >
                       <div className="flex items-center gap-2 mb-2">
-                        <skill.icon className={`w-4 h-4 ${skill.color}`} />
+                        <span className="text-lg">{skill.emoji}</span>
                         <span className="font-medium text-sm">{skill.name}</span>
+                        {results[skill.id].execution_time_ms && (
+                          <span className="text-xs text-muted-foreground ml-auto">
+                            {results[skill.id].execution_time_ms}ms
+                          </span>
+                        )}
                       </div>
                       {renderSkillResult(skill.id)}
                     </div>
