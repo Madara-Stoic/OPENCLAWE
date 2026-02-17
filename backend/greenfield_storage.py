@@ -373,10 +373,11 @@ def get_greenfield_client(use_real: bool = True):
     Otherwise falls back to local storage
     """
     bucket_name = os.environ.get('GREENFIELD_BUCKET_NAME')
+    use_mainnet = os.environ.get('GREENFIELD_USE_MAINNET', 'true').lower() == 'true'
     
     if use_real and bucket_name:
-        logger.info(f"Using real Greenfield with bucket: {bucket_name}")
-        return GreenfieldBundleService(use_testnet=True, bucket_name=bucket_name)
+        logger.info(f"Using real Greenfield {'Mainnet' if use_mainnet else 'Testnet'} with bucket: {bucket_name}")
+        return GreenfieldBundleService(use_testnet=not use_mainnet, bucket_name=bucket_name)
     else:
         logger.info("Using local Greenfield simulation (set GREENFIELD_BUCKET_NAME for real storage)")
         return GreenfieldStorageLocal()
