@@ -78,10 +78,10 @@ We implemented the 4 OpenClaw skills but use OpenAI GPT-4o for the AI backend in
 | OpenClaw Skills | ✅ | ✅ | Complete (4 skills) |
 | AI Diet Suggestions | ✅ | ✅ | Complete (OpenAI GPT-4o) |
 | Blockchain Hashing | ✅ | ✅ | Complete (SHA-256) |
+| BNB Greenfield | ✅ | ✅ | Complete (simulated mode, ready for real) |
 | opBNB Contract | ✅ | ⚠️ | Code ready, needs deployment |
 | Smart Contract Wallets | ✅ | ⚠️ | Simulated addresses |
 | Paymaster (AA) | ✅ | ⚠️ | Code ready, needs deployment |
-| BNB Greenfield | ✅ | ❌ | NOT IMPLEMENTED |
 | Nearest Hospital Alerts | ✅ | ✅ | Complete |
 
 ---
