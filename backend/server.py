@@ -1062,6 +1062,134 @@ async def run_all_skills(patient_id: str):
         "timestamp": datetime.now(timezone.utc).isoformat()
     }
 
+# ============== BNB GREENFIELD STORAGE ENDPOINTS ==============
+
+@api_router.get("/greenfield/status")
+async def get_greenfield_status():
+    """Get BNB Greenfield storage status"""
+    stats = {}
+    if hasattr(greenfield_client, 'get_storage_stats'):
+        stats = await greenfield_client.get_storage_stats()
+    
+    return {
+        "status": "connected",
+        "network": greenfield_client.network,
+        "bucket": greenfield_client.bucket_name,
+        "use_real": USE_REAL_GREENFIELD,
+        "storage_stats": stats,
+        "note": "Set USE_REAL_GREENFIELD=true in .env for production Greenfield"
+    }
+
+@api_router.post("/greenfield/store-alert")
+async def store_alert_on_greenfield(alert_id: str):
+    """Store a critical alert on BNB Greenfield for tamper-proof storage"""
+    alert = await db.critical_alerts.find_one({'id': alert_id}, {'_id': 0})
+    if not alert:
+        raise HTTPException(status_code=404, detail="Alert not found")
+    
+    # Store on Greenfield
+    result = await greenfield_client.store_critical_alert(alert)
+    
+    # Update alert with Greenfield CID
+    await db.critical_alerts.update_one(
+        {'id': alert_id},
+        {'$set': {
+            'greenfield_cid': result.get('greenfield_cid'),
+            'greenfield_url': result.get('greenfield_url'),
+            'greenfield_hash': result.get('content_hash')
+        }}
+    )
+    
+    return {
+        "alert_id": alert_id,
+        "greenfield_storage": result,
+        "on_chain_hash": alert.get('sha256_hash'),
+        "tx_hash": alert.get('tx_hash')
+    }
+
+@api_router.post("/greenfield/store-diet/{patient_id}")
+async def store_diet_on_greenfield(patient_id: str):
+    """Store latest diet plan on BNB Greenfield"""
+    diet = await db.diet_plans.find_one(
+        {'patient_id': patient_id},
+        {'_id': 0},
+        sort=[('timestamp', -1)]
+    )
+    if not diet:
+        raise HTTPException(status_code=404, detail="No diet plan found for patient")
+    
+    # Store on Greenfield
+    result = await greenfield_client.store_diet_plan(patient_id, diet)
+    
+    return {
+        "patient_id": patient_id,
+        "greenfield_storage": result
+    }
+
+@api_router.post("/greenfield/store-progress/{patient_id}")
+async def store_progress_on_greenfield(patient_id: str):
+    """Store daily progress on BNB Greenfield"""
+    progress = await db.daily_progress.find_one(
+        {'patient_id': patient_id},
+        {'_id': 0},
+        sort=[('timestamp', -1)]
+    )
+    if not progress:
+        raise HTTPException(status_code=404, detail="No progress data found for patient")
+    
+    # Store on Greenfield
+    result = await greenfield_client.store_daily_progress(patient_id, progress)
+    
+    return {
+        "patient_id": patient_id,
+        "greenfield_storage": result
+    }
+
+@api_router.post("/greenfield/store-all/{patient_id}")
+async def store_all_patient_data_on_greenfield(patient_id: str):
+    """Store all patient medical records on BNB Greenfield"""
+    patient = await db.patients.find_one({'id': patient_id}, {'_id': 0})
+    if not patient:
+        raise HTTPException(status_code=404, detail="Patient not found")
+    
+    results = {
+        "patient_id": patient_id,
+        "patient_name": patient.get('name'),
+        "records_stored": []
+    }
+    
+    # Store alerts
+    alerts = await db.critical_alerts.find({'patient_id': patient_id}, {'_id': 0}).to_list(10)
+    for alert in alerts:
+        alert_result = await greenfield_client.store_critical_alert(alert)
+        results["records_stored"].append({
+            "type": "critical_alert",
+            "greenfield_cid": alert_result.get('greenfield_cid')
+        })
+    
+    # Store diet plans
+    diets = await db.diet_plans.find({'patient_id': patient_id}, {'_id': 0}).to_list(5)
+    for diet in diets:
+        diet_result = await greenfield_client.store_diet_plan(patient_id, diet)
+        results["records_stored"].append({
+            "type": "diet_plan",
+            "greenfield_cid": diet_result.get('greenfield_cid')
+        })
+    
+    # Store progress reports
+    progress_list = await db.daily_progress.find({'patient_id': patient_id}, {'_id': 0}).to_list(7)
+    for progress in progress_list:
+        progress_result = await greenfield_client.store_daily_progress(patient_id, progress)
+        results["records_stored"].append({
+            "type": "daily_progress", 
+            "greenfield_cid": progress_result.get('greenfield_cid')
+        })
+    
+    results["total_records"] = len(results["records_stored"])
+    results["network"] = greenfield_client.network
+    
+    return results
+
 # Include the router in the main app
 app.include_router(api_router)
 
