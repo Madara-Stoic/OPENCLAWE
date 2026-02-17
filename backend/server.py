@@ -16,6 +16,7 @@ from datetime import datetime, timezone
 from emergentintegrations.llm.chat import LlmChat, UserMessage
 from openclaw_agent import OpenClawGuardianAgent, PatientVitals
 from greenfield_storage import get_greenfield_client
+from moltbot_gateway import create_gateway, MoltbotGateway
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
