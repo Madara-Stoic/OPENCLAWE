@@ -232,6 +232,32 @@ async def generate_mock_data():
     
     logger.info(f"Generated {len(hospitals)} hospitals, {len(doctors)} doctors, {len(patients)} patients")
 
+# Store stable battery levels per patient (simulates real device battery)
+_patient_battery_levels: Dict[str, int] = {}
+
+def get_stable_battery(patient_id: str) -> int:
+    """Get stable battery level for a patient - slowly decreases over time"""
+    global _patient_battery_levels
+    
+    if patient_id not in _patient_battery_levels:
+        # Initialize with a random starting battery between 70-100%
+        _patient_battery_levels[patient_id] = random.randint(70, 100)
+    
+    current = _patient_battery_levels[patient_id]
+    
+    # Small chance (10%) to decrease by 1-2%, simulating real battery drain
+    if random.random() < 0.10:
+        decrease = random.randint(1, 2)
+        current = max(15, current - decrease)  # Don't go below 15% normally
+        _patient_battery_levels[patient_id] = current
+    
+    # Very rare chance (1%) of critical battery for demo purposes
+    if random.random() < 0.01:
+        current = random.randint(5, 12)
+        _patient_battery_levels[patient_id] = current
+    
+    return current
+
 def generate_device_reading(patient: Dict) -> Dict:
     """Generate a simulated device reading for a patient"""
     is_diabetes = "diabetes" in patient.get('condition', '')
@@ -249,16 +275,17 @@ def generate_device_reading(patient: Dict) -> Dict:
             glucose = random.choice([random.randint(40, 60), random.randint(250, 400)])  # Low or high
             is_critical = True
         else:
-            glucose = random.randint(70, 180)  # Normal range
+            glucose = random.randint(80, 160)  # Normal range (tighter)
     
     if is_heart or not is_diabetes:
         if critical_chance < 0.05:  # 5% chance of critical
-            heart_rate = random.choice([random.randint(30, 50), random.randint(120, 180)])  # Abnormal
+            heart_rate = random.choice([random.randint(35, 48), random.randint(125, 160)])  # Abnormal
             is_critical = True
         else:
-            heart_rate = random.randint(60, 100)  # Normal range
+            heart_rate = random.randint(65, 95)  # Normal range (tighter)
     
-    battery = random.randint(5, 100)
+    # Use stable battery instead of random
+    battery = get_stable_battery(patient['id'])
     if battery < 15:
         is_critical = True
     
