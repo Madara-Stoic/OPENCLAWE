@@ -1108,6 +1108,56 @@ async def get_greenfield_status():
         "note": "Set USE_REAL_GREENFIELD=true in .env for production Greenfield"
     }
 
+@api_router.get("/greenfield/setup-instructions")
+async def get_greenfield_setup_instructions():
+    """Get instructions to set up Greenfield bucket for real storage"""
+    
+    # Get bundler account
+    bundler_account = None
+    if hasattr(greenfield_client, 'get_bundler_account'):
+        bundler_result = await greenfield_client.get_bundler_account("0xBbbd90a05650cE647889258251A861e479ca2e4f")
+        bundler_account = bundler_result.get("address")
+    
+    return {
+        "title": "BNB Greenfield Setup Instructions",
+        "bucket_name": greenfield_client.bucket_name,
+        "bundler_account": bundler_account or "0x4605BFc98E0a5EA63D9D5a4a1Df549732a6963f3",
+        "steps": [
+            {
+                "step": 1,
+                "action": "Go to DCellar",
+                "url": "https://testnet.dcellar.io",
+                "description": "DCellar is the UI for managing Greenfield buckets"
+            },
+            {
+                "step": 2,
+                "action": "Connect Wallet",
+                "description": "Connect your wallet (MetaMask) with BNB testnet tokens"
+            },
+            {
+                "step": 3,
+                "action": "Create Bucket",
+                "bucket_name": greenfield_client.bucket_name,
+                "description": f"Create a bucket named '{greenfield_client.bucket_name}'"
+            },
+            {
+                "step": 4,
+                "action": "Grant Permission to Bundler",
+                "bundler_address": bundler_account or "0x4605BFc98E0a5EA63D9D5a4a1Df549732a6963f3",
+                "description": "In bucket settings, grant CREATE_OBJECT permission to the bundler address"
+            },
+            {
+                "step": 5,
+                "action": "Test Storage",
+                "endpoint": "/api/greenfield/store-diet/{patient_id}",
+                "description": "Call the API to test storing data on Greenfield"
+            }
+        ],
+        "faucet": "https://testnet.bnbchain.org/faucet-smart",
+        "dcellar_testnet": "https://testnet.dcellar.io",
+        "dcellar_mainnet": "https://dcellar.io"
+    }
+
 @api_router.post("/greenfield/store-alert")
 async def store_alert_on_greenfield(alert_id: str):
     """Store a critical alert on BNB Greenfield for tamper-proof storage"""
