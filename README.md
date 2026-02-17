@@ -1,254 +1,419 @@
 # OmniHealth Guardian
 
-> Decentralized AI-IoT Medical Monitoring Platform for BNB Chain "Good Vibes Only" Hackathon
+<div align="center">
 
-[![OpenClaw](https://img.shields.io/badge/AI%20Agent-OpenClaw-purple)](https://openclaw.ai)
-[![opBNB](https://img.shields.io/badge/Blockchain-opBNB%20Testnet-yellow)](https://testnet.opbnbscan.com)
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+![OmniHealth Guardian](https://img.shields.io/badge/OmniHealth-Guardian-00D4AA?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiMwMEQ0QUEiIHN0cm9rZS13aWR0aD0iMiI+PHBhdGggZD0iTTIyIDEyaC00bC0zIDlMOSAzbC0zIDloLTQiLz48L3N2Zz4=)
+![BNB Chain](https://img.shields.io/badge/BNB-Chain-F0B90B?style=for-the-badge&logo=binance)
+![OpenClaw](https://img.shields.io/badge/Moltbot-OpenClaw-8B5CF6?style=for-the-badge)
+
+**Decentralized AI-IoT Medical Monitoring Platform**
+
+Real-time vital tracking • Blockchain-verified alerts • AI-powered health insights
+
+[Live Demo](#) • [Documentation](#architecture) • [Deploy](#deployment)
+
+</div>
+
+---
 
 ## 🏥 Overview
 
-OmniHealth Guardian is a decentralized platform for real-time monitoring of critical medical IoT devices (insulin pumps, pacemakers, glucose monitors). It features:
+OmniHealth Guardian is a decentralized platform for real-time monitoring of critical medical IoT devices like insulin pumps and pacemakers. It combines:
 
-- **3 User Dashboards**: Patient, Doctor, Organization
-- **4 OpenClaw AI Skills**: Autonomous health monitoring agents
-- **Blockchain Verification**: SHA-256 hashed alerts on opBNB
-- **Smart Contract Wallets**: Account Abstraction for gas-free transactions
+- **BNB Chain (opBNB)** for tamper-proof alert verification
+- **BNB Greenfield** for decentralized medical record storage
+- **Moltbot/OpenClaw** AI agent framework for autonomous health monitoring
+- **Account Abstraction** for gas-free critical transactions
 
-## 🎯 Features
+---
 
-### User Dashboards
-| Role | Features |
-|------|----------|
-| **Patient** | Real-time vitals, AI diet plans, alert history, OpenClaw skills panel |
-| **Doctor** | Live patient telemetry, alert logs, condition distribution charts |
-| **Organization** | System analytics, device deployment, Moltbot activity feed |
+## ✨ Features
 
-### OpenClaw AI Skills
-1. **Critical Condition Monitor** - Real-time vital monitoring with blockchain-verified alerts
-2. **AI Diet Suggestion** - Personalized meal plans based on medical condition
-3. **Real-time Feedback** - Instant coaching tips and trend analysis
-4. **Daily Progress Tracker** - Health scores and daily recommendations
+### 🔴 Real-Time Monitoring
+- Continuous vital sign tracking (glucose, heart rate)
+- Device battery monitoring
+- Critical threshold detection
 
-## 🛠 Tech Stack
+### 🤖 Moltbot AI Agent (OpenClaw-Compatible)
+Four autonomous skills powered by the OpenClaw framework:
 
-| Component | Technology |
-|-----------|------------|
-| Frontend | React, Tailwind CSS, Shadcn UI, Recharts |
-| Backend | FastAPI, Python 3.11 |
-| Database | MongoDB |
-| AI | OpenAI GPT-4o (via Emergent LLM Key) |
-| Blockchain | opBNB Testnet (Chain ID: 5611) |
-| Smart Contracts | Solidity 0.8.19 |
+| Skill | Description |
+|-------|-------------|
+| 🚨 **Critical Condition Monitor** | Detects dangerous vitals, triggers blockchain verification |
+| 🥗 **AI Diet Suggestion** | Personalized meal plans based on condition |
+| 💬 **Real-time Feedback** | Immediate coaching and health tips |
+| 📊 **Daily Progress Tracker** | Comprehensive daily health reports |
 
-## 📦 Project Structure
+### ⛓️ Blockchain Integration
+- SHA-256 hashing of all critical alerts
+- On-chain verification on opBNB
+- Immutable audit trail
+
+### 💾 Decentralized Storage
+- Medical records stored on BNB Greenfield
+- Patient-controlled data access
+- HIPAA-compliant architecture
+
+### 👥 Multi-Role Dashboards
+- **Patient**: Real-time vitals, AI diet plans, alert history
+- **Doctor**: Patient trends, alert management, care coordination
+- **Organization**: Device analytics, system health, compliance
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Technology |
+|-------|------------|
+| **Frontend** | React 18, TailwindCSS, Shadcn/UI, Recharts |
+| **Backend** | FastAPI (Python), Motor (async MongoDB) |
+| **Database** | MongoDB |
+| **AI Agent** | Moltbot Gateway (OpenClaw-compatible) |
+| **Blockchain** | opBNB (Solidity smart contracts) |
+| **Storage** | BNB Greenfield (NodeReal Bundle Service) |
+| **Auth** | Account Abstraction (Smart Contract Wallets) |
+
+---
+
+## 📁 Project Structure
 
 ```
-/app
+omnihealth-guardian/
 ├── backend/
-│   ├── server.py              # FastAPI main application
-│   ├── openclaw_agent.py      # OpenClaw AI skills implementation
-│   ├── deploy_contracts.py    # Smart contract deployment script
-│   ├── contracts/             # Solidity smart contracts
-│   │   ├── HealthAudit.sol
-│   │   ├── SimplePaymaster.sol
+│   ├── contracts/                 # Solidity smart contracts
+│   │   ├── HealthAudit.sol       # Critical alert logging
+│   │   ├── SimplePaymaster.sol   # Gas sponsorship
 │   │   └── PatientWalletFactory.sol
-│   ├── requirements.txt
-│   └── .env
+│   ├── skills/                    # Moltbot SKILL.md files
+│   │   ├── critical_monitor/
+│   │   ├── diet_suggestion/
+│   │   ├── realtime_feedback/
+│   │   └── daily_progress/
+│   ├── server.py                  # FastAPI application
+│   ├── moltbot_gateway.py         # OpenClaw Gateway implementation
+│   ├── greenfield_storage.py      # BNB Greenfield integration
+│   ├── openclaw_agent.py          # Legacy agent (for reference)
+│   ├── deploy_contracts.py        # Contract deployment script
+│   └── requirements.txt
 ├── frontend/
 │   ├── src/
-│   │   ├── pages/            # Dashboard pages
-│   │   ├── components/       # React components
-│   │   ├── services/         # API services
-│   │   └── context/          # Auth context
-│   ├── package.json
-│   └── .env
+│   │   ├── components/
+│   │   │   ├── ui/               # Shadcn components
+│   │   │   ├── OpenClawSkillsPanel.jsx
+│   │   │   └── DashboardLayout.jsx
+│   │   ├── pages/
+│   │   │   ├── LandingPage.jsx
+│   │   │   ├── PatientDashboard.jsx
+│   │   │   ├── DoctorDashboard.jsx
+│   │   │   └── OrganizationDashboard.jsx
+│   │   ├── services/
+│   │   │   └── api.js
+│   │   └── context/
+│   │       └── AuthContext.js
+│   └── package.json
 └── README.md
 ```
 
-## 🚀 Quick Start
+---
+
+## 🚀 Installation & Setup
 
 ### Prerequisites
-- Node.js >= 18
-- Python >= 3.10
-- MongoDB
-- opBNB Testnet BNB (for contract deployment)
 
-### 1. Clone & Install
+- **Node.js** >= 18.x
+- **Python** >= 3.9
+- **MongoDB** >= 6.0
+- **Git**
+
+### 1. Clone the Repository
 
 ```bash
-# Backend
+git clone https://github.com/yourusername/omnihealth-guardian.git
+cd omnihealth-guardian
+```
+
+### 2. Backend Setup
+
+```bash
 cd backend
+
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install dependencies
 pip install -r requirements.txt
 
-# Frontend
-cd frontend
-yarn install
+# Create environment file
+cat > .env << EOF
+MONGO_URL=mongodb://localhost:27017
+DB_NAME=omnihealth_guardian
+CORS_ORIGINS=*
+EMERGENT_LLM_KEY=your-openai-api-key
+USE_REAL_GREENFIELD=true
+GREENFIELD_BUCKET_NAME=your-bucket-name
+GREENFIELD_USE_MAINNET=true
+EOF
+
+# Start MongoDB (if not running)
+mongod --dbpath /path/to/data
+
+# Run the backend
+uvicorn server:app --host 0.0.0.0 --port 8001 --reload
 ```
 
-### 2. Environment Variables
-
-**Backend (.env)**
-```env
-MONGO_URL="mongodb://localhost:27017"
-DB_NAME="omnihealth"
-EMERGENT_LLM_KEY=your_emergent_llm_key
-DEPLOYER_PRIVATE_KEY=your_private_key  # For contract deployment
-```
-
-**Frontend (.env)**
-```env
-REACT_APP_BACKEND_URL=http://localhost:8001
-```
-
-### 3. Run Development Servers
+### 3. Frontend Setup
 
 ```bash
-# Backend (port 8001)
-cd backend
-uvicorn server:app --host 0.0.0.0 --port 8001 --reload
-
-# Frontend (port 3000)
 cd frontend
+
+# Install dependencies
+yarn install
+
+# Create environment file
+cat > .env << EOF
+REACT_APP_BACKEND_URL=http://localhost:8001
+EOF
+
+# Start development server
 yarn start
 ```
 
-### 4. Deploy Smart Contracts (Optional)
+### 4. Access the Application
+
+Open http://localhost:3000 in your browser.
+
+---
+
+## ⛓️ Blockchain Setup (Optional)
+
+### Deploy Smart Contracts to opBNB Testnet
+
+1. **Get testnet tokens**
+   - Visit: https://testnet.bnbchain.org/faucet-smart
+   - Request tokens for your deployer wallet
+
+2. **Configure deployment**
+   ```bash
+   cd backend
+   
+   # Add your private key to .env
+   echo "DEPLOYER_PRIVATE_KEY=your-private-key" >> .env
+   ```
+
+3. **Deploy contracts**
+   ```bash
+   python deploy_contracts.py
+   ```
+
+4. **Update contract addresses**
+   The script will output deployed addresses. Update `.env`:
+   ```
+   HEALTH_AUDIT_ADDRESS=0x...
+   PAYMASTER_ADDRESS=0x...
+   WALLET_FACTORY_ADDRESS=0x...
+   ```
+
+---
+
+## 💾 BNB Greenfield Setup
+
+### 1. Create a Bucket
+
+1. Go to [DCellar](https://dcellar.io) (Mainnet) or [DCellar Testnet](https://testnet.dcellar.io)
+2. Connect your wallet
+3. Click "Create Bucket"
+4. Name it (e.g., `omnihealth-records`)
+
+### 2. Grant Bundler Permissions
+
+The NodeReal Bundle Service needs write access:
+
+1. Click on your bucket → Share/Manage Access
+2. Add this address: `0x4605BFc98E0a5EA63D9D5a4a1Df549732a6963f3`
+3. Grant **Editor/Writer** permission (not Viewer)
+4. Confirm the transaction
+
+### 3. Update Configuration
 
 ```bash
-# Fund wallet first from https://www.l2faucet.com/opbnb
-cd backend
-export DEPLOYER_PRIVATE_KEY=your_funded_wallet_private_key
-python deploy_contracts.py
+# In backend/.env
+GREENFIELD_BUCKET_NAME=your-bucket-name
+GREENFIELD_USE_MAINNET=true  # or false for testnet
 ```
 
-## 📡 API Endpoints
+---
 
-### Core Endpoints
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/auth/login` | Social auth login (creates smart wallet) |
-| GET | `/api/patients` | List all patients |
-| GET | `/api/telemetry/live` | Real-time device readings |
-| GET | `/api/alerts` | Critical alerts with blockchain hashes |
+## 🔌 API Reference
 
-### OpenClaw Skill Endpoints
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/openclaw/skills` | List all 4 AI skills |
-| POST | `/api/openclaw/skill/critical-monitor/{patient_id}` | Run critical monitor |
-| POST | `/api/openclaw/skill/diet-suggestion/{patient_id}` | Generate diet plan |
-| POST | `/api/openclaw/skill/realtime-feedback/{patient_id}` | Get real-time coaching |
-| POST | `/api/openclaw/skill/daily-progress/{patient_id}` | Generate daily report |
-| POST | `/api/openclaw/run-all/{patient_id}` | Execute all skills |
+### Moltbot Gateway Endpoints
 
-### Blockchain Endpoints
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/blockchain/contracts` | Deployed contract info |
-| GET | `/api/blockchain/wallet/{patient_id}` | Patient smart wallet |
-| GET | `/api/blockchain/verify/{tx_hash}` | Verify transaction |
-
-## 🔗 Smart Contracts
-
-### HealthAudit.sol
-Stores SHA-256 hashes of critical medical alerts on-chain.
-```solidity
-function recordAlert(bytes32 alertHash, address patient, string alertType) returns (uint256)
-function verifyAlertHash(uint256 alertId, bytes32 hashToVerify) returns (bool)
-```
-
-### SimplePaymaster.sol
-Sponsors gas fees for critical alert transactions (Account Abstraction).
-```solidity
-function sponsorGas(address user, uint256 gasAmount, string reason)
-function whitelistCaller(address caller)
-```
-
-### PatientWalletFactory.sol
-Creates smart contract wallets for patients.
-```solidity
-function createWallet(address patientEOA, address guardian) returns (address)
-function getWallet(address patient) returns (address)
-```
-
-## ⚠️ What's Simulated vs Real
-
-| Feature | Status | Notes |
-|---------|--------|-------|
-| Patient/Doctor/Org Dashboards | ✅ Real | Fully functional UI |
-| OpenClaw AI Skills | ✅ Real | 4 working autonomous skills |
-| AI Diet Suggestions | ✅ Real | OpenAI GPT-4o integration |
-| Mock Patient Data | ✅ Real | 10 patients, 20 doctors, 30 hospitals |
-| BNB Greenfield Storage | ✅ Implemented | Simulated mode, ready for real Greenfield |
-| Blockchain TX Hashes | ⚠️ Simulated | Mock hashes until contracts deployed |
-| Smart Contract Wallets | ⚠️ Simulated | Addresses generated, not on-chain |
-| Account Abstraction Paymaster | ⚠️ Simulated | Contract ready, needs deployment |
-
-## 🔐 Deployer Wallet
-
-**Address:** `0xBbbd90a05650cE647889258251A861e479ca2e4f`
-
-**Private Key:** `e6e3df99443d25570c88b91f8f3a26e2221f5b35b8c1b95d7cf526803e7538a4`
-
-⚠️ This is a TESTNET wallet. Do not use on mainnet.
-
-**Get Test BNB:**
-- https://www.l2faucet.com/opbnb
-- https://faucets.chain.link/opbnb-testnet
-
-## 📋 Hackathon Submission Checklist
-
-- [x] Working demo application
-- [x] OpenClaw AI agent integration
-- [x] 3 user dashboards (Patient, Doctor, Organization)
-- [x] Blockchain verification with opBNB explorer links
-- [ ] Deploy contracts on opBNB testnet
-- [ ] Record 2-minute demo video
-- [ ] Submit contract addresses
-
-## 🔮 Future Enhancements
-
-1. **Real Greenfield Bucket** - Create bucket on mainnet with proper credentials
-2. **Real Account Abstraction** - Biconomy/Particle integration
-3. **WebSocket Real-time** - Live skill execution streaming
-4. **Push Notifications** - Critical alert notifications
-5. **Multi-language Support** - i18n for global accessibility
-
-## 📡 BNB Greenfield Storage
-
-Medical records are stored on BNB Greenfield decentralized storage:
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/moltbot/gateway` | GET | Gateway status and info |
+| `/api/moltbot/skills` | GET | List all available skills |
+| `/api/moltbot/execute` | POST | Execute a skill |
+| `/api/moltbot/skill/critical-monitor/{patient_id}` | POST | Run critical monitoring |
+| `/api/moltbot/skill/diet-suggestion/{patient_id}` | POST | Generate diet plan |
+| `/api/moltbot/skill/realtime-feedback/{patient_id}` | POST | Get real-time feedback |
+| `/api/moltbot/skill/daily-progress/{patient_id}` | POST | Generate daily report |
+| `/api/moltbot/run-all/{patient_id}` | POST | Execute all skills |
+| `/api/moltbot/activities` | GET | Activity feed |
+| `/api/moltbot/stats` | GET | Gateway statistics |
 
 ### Greenfield Endpoints
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/greenfield/status` | Storage status and stats |
-| POST | `/api/greenfield/store-alert?alert_id=xxx` | Store alert on Greenfield |
-| POST | `/api/greenfield/store-diet/{patient_id}` | Store diet plan |
-| POST | `/api/greenfield/store-progress/{patient_id}` | Store daily progress |
-| POST | `/api/greenfield/store-all/{patient_id}` | Store all patient records |
 
-### Enable Real Greenfield
-```env
-# In backend/.env
-USE_REAL_GREENFIELD=true
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/greenfield/status` | GET | Storage connection status |
+| `/api/greenfield/store-alert` | POST | Store alert on Greenfield |
+| `/api/greenfield/store-diet/{patient_id}` | POST | Store diet plan |
+| `/api/greenfield/store-progress/{patient_id}` | POST | Store daily progress |
+
+### Patient/Doctor/Hospital Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/patients` | GET | List all patients |
+| `/api/patients/{id}` | GET | Get patient details |
+| `/api/patients/{id}/readings` | GET | Patient device readings |
+| `/api/patients/{id}/alerts` | GET | Patient alerts |
+| `/api/doctors` | GET | List all doctors |
+| `/api/hospitals` | GET | List all hospitals |
+| `/api/telemetry/live` | GET | Live telemetry data |
+
+---
+
+## 🧪 Testing
+
+### Run Backend Tests
+
+```bash
+cd backend
+pytest tests/ -v
 ```
 
-### Greenfield CID Format
+### Test API Endpoints
+
+```bash
+# Get gateway status
+curl http://localhost:8001/api/moltbot/gateway
+
+# Execute critical monitor skill
+curl -X POST http://localhost:8001/api/moltbot/skill/critical-monitor/{patient_id}
+
+# Check Greenfield status
+curl http://localhost:8001/api/greenfield/status
 ```
-gf://omnihealth-medical-records/{bundle_name}/{patient_id}/{record_type}/{timestamp}.json
+
+---
+
+## 📝 Environment Variables
+
+### Backend (.env)
+
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `MONGO_URL` | MongoDB connection string | Yes |
+| `DB_NAME` | Database name | Yes |
+| `CORS_ORIGINS` | Allowed CORS origins | Yes |
+| `EMERGENT_LLM_KEY` | OpenAI API key for AI features | Yes |
+| `USE_REAL_GREENFIELD` | Enable real Greenfield storage | No |
+| `GREENFIELD_BUCKET_NAME` | Your Greenfield bucket name | No |
+| `GREENFIELD_USE_MAINNET` | Use Mainnet (true) or Testnet (false) | No |
+| `DEPLOYER_PRIVATE_KEY` | For contract deployment | No |
+
+### Frontend (.env)
+
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `REACT_APP_BACKEND_URL` | Backend API URL | Yes |
+
+---
+
+## 🏗️ Architecture
+
 ```
+┌─────────────────────────────────────────────────────────────────┐
+│                         FRONTEND (React)                         │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────────────┐ │
+│  │ Patient  │  │  Doctor  │  │   Org    │  │ Moltbot Skills   │ │
+│  │Dashboard │  │Dashboard │  │Dashboard │  │     Panel        │ │
+│  └────┬─────┘  └────┬─────┘  └────┬─────┘  └────────┬─────────┘ │
+└───────┼─────────────┼─────────────┼─────────────────┼───────────┘
+        │             │             │                 │
+        └─────────────┴─────────────┴─────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                      BACKEND (FastAPI)                           │
+│  ┌────────────────────────────────────────────────────────────┐ │
+│  │                   MOLTBOT GATEWAY                          │ │
+│  │  ┌────────────┐ ┌────────────┐ ┌────────────┐ ┌──────────┐│ │
+│  │  │  Critical  │ │    Diet    │ │  Realtime  │ │  Daily   ││ │
+│  │  │  Monitor   │ │ Suggestion │ │  Feedback  │ │ Progress ││ │
+│  │  │   SKILL    │ │   SKILL    │ │   SKILL    │ │  SKILL   ││ │
+│  │  └─────┬──────┘ └─────┬──────┘ └─────┬──────┘ └────┬─────┘│ │
+│  └────────┼──────────────┼──────────────┼─────────────┼──────┘ │
+│           │              │              │             │        │
+│  ┌────────▼──────────────▼──────────────▼─────────────▼──────┐ │
+│  │                      MongoDB                               │ │
+│  └────────────────────────────────────────────────────────────┘ │
+└───────────────────────────┬─────────────────────────────────────┘
+                            │
+        ┌───────────────────┼───────────────────┐
+        │                   │                   │
+        ▼                   ▼                   ▼
+┌───────────────┐  ┌───────────────┐  ┌───────────────┐
+│    opBNB      │  │ BNB Greenfield│  │    OpenAI     │
+│  Blockchain   │  │    Storage    │  │   (GPT-4o)    │
+│               │  │               │  │               │
+│ • HealthAudit │  │ • Medical     │  │ • Diet Plans  │
+│ • Paymaster   │  │   Records     │  │ • Feedback    │
+│ • Wallets     │  │ • Alerts      │  │               │
+└───────────────┘  └───────────────┘  └───────────────┘
+```
+
+---
+
+## 🔐 Security Considerations
+
+- All critical alerts are SHA-256 hashed before storage
+- Medical records are encrypted on Greenfield
+- Smart contract wallets isolate patient funds
+- Paymaster prevents unauthorized gas spending
+- Role-based access control for dashboards
+
+---
 
 ## 📄 License
 
 MIT License - see [LICENSE](LICENSE) for details.
 
-## 🙏 Acknowledgments
+---
 
-- [BNB Chain](https://www.bnbchain.org/) - Blockchain infrastructure
-- [OpenClaw](https://openclaw.ai/) - AI agent framework
-- [Emergent Labs](https://emergentagent.com/) - Development platform
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ---
 
-**Built for BNB Chain "Good Vibes Only: OpenClaw Edition" Hackathon 2026**
+## 📞 Support
+
+- **Documentation**: [docs.omnihealth.io](#)
+- **Issues**: [GitHub Issues](https://github.com/yourusername/omnihealth-guardian/issues)
+- **Email**: support@omnihealth.io
+
+---
+
+<div align="center">
+
+**Built for BNB Chain Hackathon 2025**
+
+Powered by **opBNB** • **BNB Greenfield** • **OpenClaw/Moltbot**
+
+</div>
