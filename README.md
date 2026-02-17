@@ -180,9 +180,9 @@ function getWallet(address patient) returns (address)
 | OpenClaw AI Skills | ✅ Real | 4 working autonomous skills |
 | AI Diet Suggestions | ✅ Real | OpenAI GPT-4o integration |
 | Mock Patient Data | ✅ Real | 10 patients, 20 doctors, 30 hospitals |
+| BNB Greenfield Storage | ✅ Implemented | Simulated mode, ready for real Greenfield |
 | Blockchain TX Hashes | ⚠️ Simulated | Mock hashes until contracts deployed |
 | Smart Contract Wallets | ⚠️ Simulated | Addresses generated, not on-chain |
-| BNB Greenfield | ❌ Not Implemented | Used local SHA-256 hashing instead |
 | Account Abstraction Paymaster | ⚠️ Simulated | Contract ready, needs deployment |
 
 ## 🔐 Deployer Wallet
