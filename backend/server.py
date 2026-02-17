@@ -15,6 +15,7 @@ import asyncio
 from datetime import datetime, timezone
 from emergentintegrations.llm.chat import LlmChat, UserMessage
 from openclaw_agent import OpenClawGuardianAgent, PatientVitals
+from greenfield_storage import get_greenfield_client, GreenfieldStorageSimulated
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -26,6 +27,11 @@ db = client[os.environ['DB_NAME']]
 
 # LLM API Key
 EMERGENT_LLM_KEY = os.environ.get('EMERGENT_LLM_KEY', '')
+
+# Initialize Greenfield Storage
+# Set USE_REAL_GREENFIELD=true in .env to use actual Greenfield network
+USE_REAL_GREENFIELD = os.environ.get('USE_REAL_GREENFIELD', 'false').lower() == 'true'
+greenfield_client = get_greenfield_client(use_real=USE_REAL_GREENFIELD)
 
 # Initialize OpenClaw Guardian Agent
 openclaw_agent = None
