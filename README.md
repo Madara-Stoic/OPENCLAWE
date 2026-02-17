@@ -209,11 +209,35 @@ function getWallet(address patient) returns (address)
 
 ## 🔮 Future Enhancements
 
-1. **BNB Greenfield Integration** - Decentralized medical record storage
+1. **Real Greenfield Bucket** - Create bucket on mainnet with proper credentials
 2. **Real Account Abstraction** - Biconomy/Particle integration
 3. **WebSocket Real-time** - Live skill execution streaming
 4. **Push Notifications** - Critical alert notifications
 5. **Multi-language Support** - i18n for global accessibility
+
+## 📡 BNB Greenfield Storage
+
+Medical records are stored on BNB Greenfield decentralized storage:
+
+### Greenfield Endpoints
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/greenfield/status` | Storage status and stats |
+| POST | `/api/greenfield/store-alert?alert_id=xxx` | Store alert on Greenfield |
+| POST | `/api/greenfield/store-diet/{patient_id}` | Store diet plan |
+| POST | `/api/greenfield/store-progress/{patient_id}` | Store daily progress |
+| POST | `/api/greenfield/store-all/{patient_id}` | Store all patient records |
+
+### Enable Real Greenfield
+```env
+# In backend/.env
+USE_REAL_GREENFIELD=true
+```
+
+### Greenfield CID Format
+```
+gf://omnihealth-medical-records/{bundle_name}/{patient_id}/{record_type}/{timestamp}.json
+```
 
 ## 📄 License
 
