@@ -34,8 +34,11 @@ EMERGENT_LLM_KEY = os.environ.get('EMERGENT_LLM_KEY', '')
 USE_REAL_GREENFIELD = os.environ.get('USE_REAL_GREENFIELD', 'true').lower() == 'true'
 greenfield_client = get_greenfield_client(use_real=USE_REAL_GREENFIELD)
 
-# Initialize OpenClaw Guardian Agent
+# Initialize OpenClaw Guardian Agent (legacy)
 openclaw_agent = None
+
+# Initialize Moltbot Gateway (OpenClaw-compatible)
+moltbot_gateway: MoltbotGateway = None
 
 # Load deployed contract addresses if available
 DEPLOYED_CONTRACTS = {}
