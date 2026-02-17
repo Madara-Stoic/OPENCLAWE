@@ -11,7 +11,7 @@ import time
 from datetime import datetime
 
 # Use the public frontend URL for testing
-BASE_URL = "https://omni-health-ai.preview.emergentagent.com"
+BASE_URL = "https://medical-iot-monitor.preview.emergentagent.com"
 
 class OpenClawAPITester:
     def __init__(self):
