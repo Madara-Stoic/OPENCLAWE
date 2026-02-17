@@ -1029,9 +1029,9 @@ async def run_realtime_feedback(patient_id: str):
     vitals = PatientVitals(
         patient_id=patient_id,
         patient_name=patient.get('name'),
-        glucose_level=random.randint(70, 180) if is_diabetes else None,
-        heart_rate=random.randint(60, 100) if not is_diabetes else None,
-        battery_level=random.randint(20, 100),
+        glucose_level=random.randint(80, 160) if is_diabetes else None,
+        heart_rate=random.randint(65, 95) if not is_diabetes else None,
+        battery_level=get_stable_battery(patient_id),
         condition=condition
     )
     
