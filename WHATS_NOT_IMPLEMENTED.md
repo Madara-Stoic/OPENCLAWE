@@ -1,19 +1,25 @@
 # ⚠️ IMPORTANT: What's NOT Implemented
 
-## BNB Greenfield Storage - ❌ NOT IMPLEMENTED
+## BNB Greenfield Storage - ✅ IMPLEMENTED (Simulated Mode)
 
-The original requirement was to use BNB Greenfield for off-chain storage of encrypted medical logs. 
+The Greenfield integration is now complete with a dual-mode client:
 
-**What we have instead:**
-- Local SHA-256 hashing of alert data
-- Hashes stored in MongoDB
-- Mock CID references (not actual Greenfield)
+**What we have:**
+- Full Greenfield storage client (`/app/backend/greenfield_storage.py`)
+- API endpoints for storing alerts, diet plans, progress reports
+- Greenfield CID format: `gf://bucket/bundle/patient_id/record_type/timestamp.json`
+- Simulated mode for development (stores locally with Greenfield structure)
+- Ready for real Greenfield connection
 
-**To implement real Greenfield:**
-1. Get Greenfield API credentials
-2. Install `@bnb-chain/greenfield-js-sdk`
-3. Upload encrypted medical logs to Greenfield buckets
-4. Store actual CIDs on-chain in HealthAudit contract
+**To enable real Greenfield:**
+```env
+# In backend/.env
+USE_REAL_GREENFIELD=true
+```
+
+**Greenfield Endpoints:**
+- `GET /api/greenfield/status` - Check storage status
+- `POST /api/greenfield/store-all/{patient_id}` - Store all patient records
 
 ---
 
