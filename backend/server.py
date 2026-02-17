@@ -1094,6 +1094,236 @@ async def run_all_skills(patient_id: str):
         "timestamp": datetime.now(timezone.utc).isoformat()
     }
 
+# ============== MOLTBOT GATEWAY ENDPOINTS (OpenClaw-Compatible) ==============
+
+@api_router.get("/moltbot/gateway")
+async def get_moltbot_gateway_info():
+    """
+    Get Moltbot Gateway information
+    
+    Returns gateway status, loaded skills, and configuration.
+    Similar to OpenClaw's gateway status endpoint.
+    """
+    global moltbot_gateway
+    if moltbot_gateway is None:
+        moltbot_gateway = create_gateway(db, greenfield_client, EMERGENT_LLM_KEY)
+    
+    return moltbot_gateway.get_gateway_info()
+
+@api_router.get("/moltbot/skills")
+async def get_moltbot_skills():
+    """
+    Get all available Moltbot skills
+    
+    Returns list of loaded skills with their configurations from SKILL.md files.
+    """
+    global moltbot_gateway
+    if moltbot_gateway is None:
+        moltbot_gateway = create_gateway(db, greenfield_client, EMERGENT_LLM_KEY)
+    
+    return {
+        "gateway": "Moltbot Gateway",
+        "skills_count": len(moltbot_gateway.skills),
+        "skills": [
+            {
+                "name": s.name,
+                "emoji": s.emoji,
+                "description": s.description,
+                "version": s.version,
+                "priority": s.priority,
+                "triggers": s.triggers,
+                "actions": s.actions,
+                "requires": s.requires
+            }
+            for s in moltbot_gateway.skills.values()
+        ]
+    }
+
+@api_router.get("/moltbot/skill/{skill_name}")
+async def get_moltbot_skill_config(skill_name: str):
+    """
+    Get configuration for a specific Moltbot skill
+    
+    Returns the SKILL.md configuration for the specified skill.
+    """
+    global moltbot_gateway
+    if moltbot_gateway is None:
+        moltbot_gateway = create_gateway(db, greenfield_client, EMERGENT_LLM_KEY)
+    
+    config = moltbot_gateway.get_skill_config(skill_name)
+    if not config:
+        raise HTTPException(status_code=404, detail=f"Skill '{skill_name}' not found")
+    
+    return config
+
+@api_router.post("/moltbot/execute")
+async def execute_moltbot_skill(data: Dict):
+    """
+    Execute a Moltbot skill
+    
+    This is the main webhook endpoint for skill execution, similar to OpenClaw's
+    POST /hooks endpoint.
+    
+    Request body:
+    {
+        "skill": "skill_name",
+        "params": {
+            "patient_id": "...",
+            ...
+        }
+    }
+    """
+    global moltbot_gateway
+    if moltbot_gateway is None:
+        moltbot_gateway = create_gateway(db, greenfield_client, EMERGENT_LLM_KEY)
+    
+    skill_name = data.get('skill')
+    params = data.get('params', {})
+    
+    if not skill_name:
+        raise HTTPException(status_code=400, detail="skill is required")
+    
+    result = await moltbot_gateway.execute_skill(skill_name, params)
+    
+    return result.to_dict()
+
+@api_router.post("/moltbot/skill/critical-monitor/{patient_id}")
+async def moltbot_critical_monitor(patient_id: str):
+    """
+    Execute Critical Condition Monitor skill via Moltbot Gateway
+    
+    Monitors patient vitals and triggers blockchain-verified alerts.
+    """
+    global moltbot_gateway
+    if moltbot_gateway is None:
+        moltbot_gateway = create_gateway(db, greenfield_client, EMERGENT_LLM_KEY)
+    
+    result = await moltbot_gateway.execute_skill(
+        'critical_condition_monitor',
+        {'patient_id': patient_id}
+    )
+    
+    return result.to_dict()
+
+@api_router.post("/moltbot/skill/diet-suggestion/{patient_id}")
+async def moltbot_diet_suggestion(patient_id: str, meal_type: str = "daily"):
+    """
+    Execute AI Diet Suggestion skill via Moltbot Gateway
+    
+    Generates personalized diet plans with blockchain verification.
+    """
+    global moltbot_gateway
+    if moltbot_gateway is None:
+        moltbot_gateway = create_gateway(db, greenfield_client, EMERGENT_LLM_KEY)
+    
+    result = await moltbot_gateway.execute_skill(
+        'ai_diet_suggestion',
+        {'patient_id': patient_id, 'meal_type': meal_type}
+    )
+    
+    return result.to_dict()
+
+@api_router.post("/moltbot/skill/realtime-feedback/{patient_id}")
+async def moltbot_realtime_feedback(patient_id: str):
+    """
+    Execute Real-time Feedback skill via Moltbot Gateway
+    
+    Provides immediate coaching based on vitals and trends.
+    """
+    global moltbot_gateway
+    if moltbot_gateway is None:
+        moltbot_gateway = create_gateway(db, greenfield_client, EMERGENT_LLM_KEY)
+    
+    result = await moltbot_gateway.execute_skill(
+        'realtime_feedback',
+        {'patient_id': patient_id}
+    )
+    
+    return result.to_dict()
+
+@api_router.post("/moltbot/skill/daily-progress/{patient_id}")
+async def moltbot_daily_progress(patient_id: str, date: str = None):
+    """
+    Execute Daily Progress Tracker skill via Moltbot Gateway
+    
+    Generates comprehensive daily health report with Greenfield storage.
+    """
+    global moltbot_gateway
+    if moltbot_gateway is None:
+        moltbot_gateway = create_gateway(db, greenfield_client, EMERGENT_LLM_KEY)
+    
+    result = await moltbot_gateway.execute_skill(
+        'daily_progress_tracker',
+        {'patient_id': patient_id, 'date': date}
+    )
+    
+    return result.to_dict()
+
+@api_router.post("/moltbot/run-all/{patient_id}")
+async def moltbot_run_all_skills(patient_id: str):
+    """
+    Execute all Moltbot skills for a patient
+    
+    Runs all 4 skills in sequence and returns combined results.
+    """
+    global moltbot_gateway
+    if moltbot_gateway is None:
+        moltbot_gateway = create_gateway(db, greenfield_client, EMERGENT_LLM_KEY)
+    
+    results = {
+        "gateway": "Moltbot Gateway",
+        "patient_id": patient_id,
+        "skills_executed": []
+    }
+    
+    # Execute each skill
+    skills = ['critical_condition_monitor', 'ai_diet_suggestion', 'realtime_feedback', 'daily_progress_tracker']
+    
+    for skill_name in skills:
+        skill_result = await moltbot_gateway.execute_skill(skill_name, {'patient_id': patient_id})
+        results["skills_executed"].append({
+            "skill": skill_name,
+            "status": skill_result.status,
+            "execution_time_ms": skill_result.execution_time_ms,
+            "tx_hash": skill_result.tx_hash
+        })
+    
+    results["verified_by_openclaw"] = True
+    results["timestamp"] = datetime.now(timezone.utc).isoformat()
+    
+    return results
+
+@api_router.get("/moltbot/activities")
+async def get_moltbot_activity_feed(limit: int = 50):
+    """
+    Get Moltbot Gateway activity feed
+    
+    Returns recent skill executions and verifications.
+    """
+    global moltbot_gateway
+    if moltbot_gateway is None:
+        moltbot_gateway = create_gateway(db, greenfield_client, EMERGENT_LLM_KEY)
+    
+    activities = await moltbot_gateway.get_activity_feed(limit)
+    return {
+        "gateway": "Moltbot Gateway",
+        "activities_count": len(activities),
+        "activities": activities
+    }
+
+@api_router.get("/moltbot/stats")
+async def get_moltbot_gateway_stats():
+    """
+    Get Moltbot Gateway statistics
+    
+    Returns execution counts and gateway health.
+    """
+    global moltbot_gateway
+    if moltbot_gateway is None:
+        moltbot_gateway = create_gateway(db, greenfield_client, EMERGENT_LLM_KEY)
+    
+    return await moltbot_gateway.get_stats()
+
 # ============== BNB GREENFIELD STORAGE ENDPOINTS ==============
 
 @api_router.get("/greenfield/status")
