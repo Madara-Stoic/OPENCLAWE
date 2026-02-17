@@ -1,67 +1,85 @@
 # OmniHealth Guardian - Product Requirements Document
 
 ## Original Problem Statement
-Build a decentralized platform for real-time monitoring of critical medical IoT devices like insulin pumps and pacemakers. The platform includes:
-- Three dashboards: Patient, Doctor, Organization
-- Account Abstraction with Paymaster on opBNB
-- OpenClaw/Moltbot Guardian Agent for monitoring
-- Critical alerts with SHA-256 hashing and blockchain verification
-- BNB Greenfield for off-chain storage (simulated)
-- AI diet suggestions
+Build 'OmniHealth Guardian,' a decentralized platform for real-time monitoring of critical medical IoT devices like insulin pumps and pacemakers.
 
-## Architecture
-- **Frontend**: React + Tailwind CSS + Shadcn UI
-- **Backend**: FastAPI + MongoDB
-- **AI**: OpenAI GPT-4o via Emergent LLM Key
-- **Blockchain**: opBNB Testnet (simulated)
+### Core Requirements
+- **Platform**: BNB Chain (opBNB for transactions, Greenfield for storage)
+- **AI Engine**: OpenClaw (Moltbot) Framework
+- **User Tiers**: Patient, Doctor, Organization dashboards
+- **Account Abstraction**: Paymaster on opBNB with Social Auth
+- **Guardian Agent**: OpenClaw agent for monitoring with on-chain verification
+- **Data Storage**: BNB Greenfield for encrypted medical logs
 
-## User Personas
-1. **Patient**: Views personal vitals, receives AI diet plans, monitors device battery
-2. **Doctor**: Monitors multiple patients, views alerts, tracks patient trends
-3. **Organization**: System-wide analytics, device deployment, system health
+---
 
-## Core Requirements (Static)
-- Real-time device telemetry (glucose, heart rate, battery)
-- Critical alert detection with SHA-256 hashing
-- AI-powered diet suggestions
-- Dark-mode, high-contrast medical UI
-- Simulated blockchain verification on opBNB
+## What's Been Implemented
 
-## What's Been Implemented (Feb 2026)
-- ✅ Landing page with social auth simulation
-- ✅ Patient Dashboard with real-time vitals and AI diet plans
-- ✅ Doctor Dashboard with live patient telemetry
-- ✅ Organization Dashboard with system analytics
-- ✅ Moltbot activity feed with "Verified by OpenClaw" badges
-- ✅ Mock data: 10 patients, 20 doctors, 30 hospitals
-- ✅ Critical alert system with blockchain verification links
-- ✅ Smart Contract Wallet creation simulation
+### ✅ Completed (December 2025)
+1. **Full-Stack Application**
+   - React frontend with TailwindCSS, Shadcn/UI
+   - FastAPI backend with async MongoDB
+   - 3 role-based dashboards (Patient, Doctor, Org)
 
-## Simulated/Mocked Components
-- Blockchain transactions (mock tx_hash, links to real opBNB explorer)
-- Account Abstraction (simulated wallet creation)
-- BNB Greenfield storage (local SHA-256 hashing)
-- OpenClaw agent (using OpenAI GPT-4o instead)
+2. **Moltbot/OpenClaw Integration**
+   - Real OpenClaw-compatible architecture
+   - SKILL.md configuration files
+   - Moltbot Gateway with 4 skills:
+     - Critical Condition Monitor
+     - AI Diet Suggestion
+     - Real-time Feedback
+     - Daily Progress Tracker
 
-## Prioritized Backlog
+3. **BNB Greenfield**
+   - Connected to Mainnet
+   - Bucket "openclaw" created
+   - Integration code complete
 
-### P0 - Critical (Not Blocked)
-- All P0 features implemented
+4. **Smart Contracts**
+   - HealthAudit.sol written
+   - SimplePaymaster.sol written
+   - PatientWalletFactory.sol written
+
+5. **UI/UX**
+   - Dark theme with high contrast
+   - Real-time charts
+   - "Verified by OpenClaw" badges
+   - Blockchain verification links
+
+---
+
+## Backlog (P0-P2)
+
+### P0 - Critical
+- [ ] Fix Greenfield permissions (change Viewer → Editor)
+- [ ] Deploy smart contracts to opBNB testnet
 
 ### P1 - High Priority
-- Actual smart contract deployment on opBNB testnet
-- Real Account Abstraction with Biconomy/Particle
-- Push notifications for critical alerts
-- Patient data encryption
+- [ ] Real blockchain transaction recording
+- [ ] Implement Account Abstraction with Biconomy
 
-### P2 - Medium Priority
-- BNB Greenfield integration for medical record storage
-- Historical data export
-- Multi-language support
-- Mobile responsive improvements
+### P2 - Nice to Have
+- [ ] "Nearest Hospital" notification
+- [ ] WebSocket real-time updates
+- [ ] Mobile responsive optimization
+- [ ] Email/SMS alerts for critical conditions
 
-## Next Tasks
-1. Deploy HealthAudit.sol contract on opBNB testnet
-2. Integrate real Paymaster for gas-free critical alerts
-3. Add WebSocket for true real-time updates
-4. Implement patient data encryption at rest
+---
+
+## Technical Architecture
+
+```
+Frontend (React) → Backend (FastAPI) → MongoDB
+                         ↓
+         ┌───────────────┼───────────────┐
+         ↓               ↓               ↓
+     Moltbot         Greenfield       opBNB
+     Gateway         (Mainnet)      (Testnet)
+```
+
+## Key Files
+- `/app/backend/server.py` - Main API
+- `/app/backend/moltbot_gateway.py` - OpenClaw Gateway
+- `/app/backend/greenfield_storage.py` - Greenfield integration
+- `/app/backend/skills/` - SKILL.md definitions
+- `/app/frontend/src/components/OpenClawSkillsPanel.jsx` - Skills UI
