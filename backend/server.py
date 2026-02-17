@@ -944,7 +944,8 @@ async def run_critical_monitor(patient_id: str):
         else:
             heart_rate = random.randint(65, 95)
     
-    battery = random.randint(8, 100) if critical_chance < 0.2 else random.randint(30, 100)
+    # Use stable battery
+    battery = get_stable_battery(patient_id)
     
     vitals = PatientVitals(
         patient_id=patient_id,
